@@ -19,10 +19,13 @@
             --border: #E2E8F0;
             --text-main: #334155;
             --text-muted: #64748B;
-            --radius: 8px; /* Raio menor para look mais "software" */
+            --radius: 8px;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --error-bg: #FEF2F2;
             --error-text: #991B1B;
+            --warning-bg: #FFFBEB;
+            --warning-text: #B45309;
+            --warning-border: #FCD34D;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline-color: var(--primary); }
@@ -38,7 +41,7 @@
             padding: 40px 20px;
         }
 
-        /* --- NAVBAR SUPERIOR (Estilo Dashboard) --- */
+        /* --- NAVBAR SUPERIOR --- */
         .navbar {
             width: 100%;
             max-width: 800px;
@@ -87,7 +90,7 @@
         /* --- CONTAINER PRINCIPAL --- */
         .container {
             background: var(--surface);
-            max-width: 800px; /* Mais largo para caber bem o endereço */
+            max-width: 800px;
             width: 100%;
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -99,9 +102,6 @@
             padding: 24px 32px;
             border-bottom: 1px solid var(--border);
             background: #F8FAFC;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .card-header h2 {
@@ -131,10 +131,18 @@
             grid-template-columns: 1fr;
             gap: 24px;
         }
+        
+        /* Grid específica para endereço (Bairro, Cidade, CEP) */
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
 
         @media (min-width: 600px) {
             .row-2 { grid-template-columns: 1fr 1fr; }
             .row-3 { grid-template-columns: 2fr 1fr; }
+            .address-grid { grid-template-columns: 2fr 2fr 1.5fr; } /* Proporção Bairro/Cidade/CEP */
         }
 
         .input-group {
@@ -167,9 +175,27 @@
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
+        /* --- ÁREA DE DESTAQUE (Consultor) --- */
+        .consultant-section {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-top: 10px;
+        }
+
+        .consultant-note {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: var(--warning-text);
+            line-height: 1.5;
+        }
+
+        .consultant-note svg {
+            flex-shrink: 0;
+            color: var(--primary-dark);
         }
 
         /* --- BOTÕES DE AÇÃO --- */
@@ -282,7 +308,7 @@
             <form id="proposalForm">
                 <div class="form-grid">
                     
-                    <!-- Linha 1: Identificação -->
+                    <!-- Linha 1: Identificação Cliente -->
                     <div class="row-2">
                         <div class="input-group">
                             <label for="nome">Cliente / Razão Social</label>
@@ -294,19 +320,34 @@
                         </div>
                     </div>
 
-                    <!-- Linha 2: Contato (E-mail removido) -->
+                    <!-- Linha 2: Telefone Cliente (agora com label explícito) -->
                     <div class="input-group">
-                        <label for="telefone">Telefone / WhatsApp</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15" required>
+                        <label for="telefone">WhatsApp do Cliente (Opcional)</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15">
                     </div>
 
-                    <!-- Linha 3: Endereço -->
+                    <!-- SEÇÃO: Endereço Dividido -->
                     <div class="input-group">
-                        <label for="endereco">Endereço da Instalação</label>
-                        <textarea id="endereco" name="endereco" placeholder="Rua, Número, Bairro, Cidade - UF&#10;CEP: 00000-000" required></textarea>
+                        <label for="endereco">Endereço (Rua e Número)</label>
+                        <input type="text" id="endereco" name="endereco" placeholder="Ex: Av. Paulista, 1000, Apto 50" required>
                     </div>
 
-                    <!-- Linha 4: Dados Técnicos (Atualizado) -->
+                    <div class="address-grid">
+                        <div class="input-group">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" id="bairro" name="bairro" placeholder="Centro" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" id="cidade" name="cidade" placeholder="São Paulo" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="cep">CEP</label>
+                            <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9" required>
+                        </div>
+                    </div>
+
+                    <!-- Linha: Dados Técnicos -->
                     <div class="row-3">
                         <div class="input-group">
                             <label for="padrao">Padrão de Energia</label>
@@ -319,6 +360,24 @@
                         <div class="input-group">
                             <label for="consumo">Consumo Médio</label>
                             <input type="number" id="consumo" name="consumo" placeholder="0,00" required>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO FINAL: Contato do Consultor -->
+                    <div class="consultant-section">
+                        <div class="consultant-note">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>
+                                <strong>Atenção Consultor:</strong> Não coloque o número do cliente abaixo. Insira o <strong>SEU WhatsApp</strong> para receber a proposta pronta e apresentá-la ao cliente.
+                            </span>
+                        </div>
+                        <div class="input-group">
+                            <label for="whatsapp_consultor" style="color: var(--primary-dark);">Seu WhatsApp (Para receber a proposta)</label>
+                            <input type="tel" id="whatsapp_consultor" name="whatsapp_consultor" placeholder="(00) 00000-0000" maxlength="15" required style="border-color: var(--warning-border); background: white;">
                         </div>
                     </div>
 
@@ -343,22 +402,20 @@
 
     <script>
         // ==========================================
-        // PASSO IMPORTANTE:
-        // 1. Copie a URL do seu Webhook no n8n (Test URL ou Production URL).
-        // 2. Cole DENTRO das aspas abaixo.
-        // Exemplo: const WEBHOOK_URL = "https://n8n.seusite.com/webhook/..."
+        // URL DO N8N
         // ==========================================
-        
         const WEBHOOK_URL = "https://benitech-n8n.x3t6qy.easypanel.host/webhook/propostaslevesol"; 
-
         
-        // Máscaras de Input
-        const inputs = {
+        // Configuração de Máscaras
+        const maskInputs = {
             cpf: document.getElementById('cpf_cnpj'),
-            tel: document.getElementById('telefone')
+            telCliente: document.getElementById('telefone'),
+            cep: document.getElementById('cep'),
+            telConsultor: document.getElementById('whatsapp_consultor')
         };
 
-        inputs.cpf.addEventListener('input', (e) => {
+        // Máscara CPF/CNPJ
+        maskInputs.cpf.addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g, "");
             if (v.length > 14) v = v.slice(0, 14);
             if (v.length <= 11) {
@@ -374,10 +431,22 @@
             e.target.value = v;
         });
 
-        inputs.tel.addEventListener('input', (e) => {
+        // Função genérica para máscara de telefone
+        const phoneMask = (e) => {
             let v = e.target.value.replace(/\D/g, "");
             v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
             v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            e.target.value = v;
+        };
+
+        maskInputs.telCliente.addEventListener('input', phoneMask);
+        maskInputs.telConsultor.addEventListener('input', phoneMask);
+
+        // Máscara CEP
+        maskInputs.cep.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, "");
+            if (v.length > 8) v = v.slice(0, 8);
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
             e.target.value = v;
         });
 
@@ -400,26 +469,27 @@
             e.preventDefault();
             
             const btn = document.getElementById('submitBtn');
-            
-            // 1. Bloqueia botão e mostra spinner
             btn.classList.add('loading');
             btn.disabled = true;
 
-            // 2. Coleta os dados
+            // Coleta os dados detalhados
             const formData = {
                 nome: document.getElementById('nome').value,
                 cpf_cnpj: document.getElementById('cpf_cnpj').value,
-                telefone: document.getElementById('telefone').value,
-                endereco: document.getElementById('endereco').value,
+                telefone_cliente: document.getElementById('telefone').value, // Nome do campo ajustado
+                endereco_completo: {
+                    rua: document.getElementById('endereco').value,
+                    bairro: document.getElementById('bairro').value,
+                    cidade: document.getElementById('cidade').value,
+                    cep: document.getElementById('cep').value
+                },
                 padrao_energia: document.getElementById('padrao').value,
                 consumo_medio: document.getElementById('consumo').value,
+                whatsapp_consultor: document.getElementById('whatsapp_consultor').value, // Novo campo
                 data_solicitacao: new Date().toISOString()
             };
 
             try {
-                // 3. Envia para o n8n
-                // Nota: Se você estiver rodando localmente e o n8n estiver em outro domínio,
-                // você pode ter problemas de CORS. Em produção com domínio configurado, geralmente funciona.
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
@@ -430,8 +500,8 @@
                 });
 
                 if (response.ok) {
-                    showToast("Dados enviados para o n8n com sucesso!");
-                    this.reset(); // Limpa o formulário
+                    showToast("Proposta solicitada! Verifique seu WhatsApp em instantes.");
+                    this.reset(); 
                 } else {
                     throw new Error('Erro no servidor');
                 }
@@ -440,7 +510,6 @@
                 console.error('Erro:', error);
                 showToast("Erro ao conectar com o servidor.", 'error');
             } finally {
-                // 4. Restaura o botão
                 btn.classList.remove('loading');
                 btn.disabled = false;
             }
